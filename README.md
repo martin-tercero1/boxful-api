@@ -58,6 +58,7 @@ PORT=3001
 
 ### 4. Push the schema to the database
 ```bash
+npx prisma generate
 npx prisma db push
 ```
 
@@ -151,3 +152,8 @@ Settlement     = -shippingCost
 Shipping cost is determined by the day of the week of the delivery (or scheduled date if not yet delivered).
 
 ---
+
+## Live Demo
+
+API: `https://boxful-api.vercel.app`
+Docs: `https://boxful-api.vercel.app/docs`
