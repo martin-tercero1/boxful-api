@@ -6,7 +6,7 @@ import { UseGuards } from "@nestjs/common";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import { JwtAuthGuard } from "./guards/jwt-auth-guard";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -26,23 +26,37 @@ export class AuthController {
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  @ApiBody({ type: LoginDto })
+  @ApiBody({
+    type: LoginDto,
+    examples: {
+      example1: {
+        summary: 'Example login',
+        value: {
+          email: 'martin@mail.com',
+          password: '010204Ma'
+        }
+      }
+    }
+  })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   refresh(@CurrentUser() user: any) {
     return this.authService.refresh(user.sub, user.refreshToken);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   logout(@CurrentUser() user: any) {
     return this.authService.logout(user.sub);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@CurrentUser() user: any) {

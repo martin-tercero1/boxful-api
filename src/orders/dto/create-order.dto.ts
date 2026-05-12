@@ -3,29 +3,29 @@ import {
   IsDateString,
   IsEmail,
   IsInt,
-  IsOptional,
   IsString,
   Min,
   ValidateIf,
   ValidateNested,
   IsArray,
+  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ProductDto {
-  @IsInt()
+  @IsNumber()
   @Min(1)
   height: number;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   length: number;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   width: number;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   weight: number;
 

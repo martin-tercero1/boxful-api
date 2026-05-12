@@ -1,98 +1,153 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Boxful API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for the Boxful platform, built as part of the technical test.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Framework**: NestJS
+- **Database**: MongoDB (Atlas)
+- **ORM**: Prisma
+- **Auth**: JWT (Access + Refresh tokens)
+- **Docs**: Swagger
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+- JWT authentication (signup, login, refresh, logout)
+- Order management with filtering and pagination
+- Webhook endpoint for delivery status updates (COD support)
+- Automatic settlement calculation for total orders per user
+- Configurable shipping cost per day of the week
 
+---
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- A MongoDB Atlas account (free tier is enough)
+
+---
+
+## Local Setup
+
+### 1. Clone the repository
 ```bash
-$ pnpm install
+git clone https://github.com/martin-tercero1/boxful-api.git
+cd boxful-api
 ```
 
-## Compile and run the project
-
+### 2. Install dependencies
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
 ```
 
-## Run tests
+### 3. Configure environment variables
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+Create a `.env` file in the root of the project:
+```env
+DATABASE_URL="mongodb+srv://<user>:<password>@cluster.mongodb.net/boxful"
+JWT_SECRET="your-jwt-secret"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_SECRET="your-refresh-secret"
+JWT_REFRESH_EXPIRES_IN="7d"
+WEBHOOK_SECRET="your-webhook-secret"
+PORT=3001
 ```
 
-## Deployment
+> **MongoDB Atlas**: Create a free cluster at [mongodb.com/atlas](https://mongodb.com/atlas), create a database user, allow network access, and paste the connection string above.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 4. Push the schema to the database
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+npx prisma db push
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Seed shipping costs
+```bash
+pnpm run prisma:seed
+```
 
-## Resources
+This seeds the shipping cost configuration for each day of the week:
 
-Check out a few resources that may come in handy when working with NestJS:
+| Day | Cost |
+|-----|------|
+| Monday | $3.0 |
+| Tuesday | $3.50 |
+| Wednesday | $3.50 |
+| Thursday | $3.50 |
+| Friday | $4.00 |
+| Saturday | $4.50 |
+| Sunday | $5.00 |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+> These values can be updated directly in MongoDB Atlas if needed.
 
-## Support
+### 6. Start the development server
+```bash
+pnpm start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The API will be running at `http://localhost:3001`
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## API Documentation
 
-## License
+Once the server is running, full Swagger documentation is available at:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+http://localhost:3001/docs
+```
+
+> For protected endpoints, click **Authorize** and paste your `accessToken` received from `/auth/login`.
+
+For the webhook endpoint, use the `X-Webhook-Secret` header with the value set in your `.env`.
+
+---
+
+## API Overview
+
+### Auth
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/auth/signup` | ❌ | Register new user |
+| POST | `/api/v1/auth/login` | ❌ | Login, returns tokens |
+| POST | `/api/v1/auth/refresh` | Refresh Token | Get new access token |
+| POST | `/api/v1/auth/logout` | ✅ | Invalidate refresh token |
+| GET | `/api/v1/auth/me` | ✅ | Get current user |
+
+### Orders
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/orders` | ✅ | Create order |
+| GET | `/api/v1/orders` | ✅ | List orders (filterable) |
+| GET | `/api/v1/orders/settlement` | ✅ | Total settlement for logged-in user |
+| POST | `/api/v1/orders/:id/delivery` | Webhook Secret | Delivery status update |
+
+### Order Filters (`GET /orders`)
+```
+?status=DELIVERED
+?cashOnDelivery=true
+?from=2025-01-01&to=2025-12-31
+?reference=ORD-202505
+?page=1&limit=10
+```
+
+---
+
+## Settlement Logic
+
+For each order the settlement is calculated as follows:
+
+**COD Order:**
+```
+Commission     = amountCollected × 0.0001 (max $25)
+Settlement     = amountCollected - shippingCost - commission
+```
+
+**Standard Order (no COD):**
+```
+Settlement     = -shippingCost
+```
+
+Shipping cost is determined by the day of the week of the delivery (or scheduled date if not yet delivered).
+
+---
